@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIFAR-10 Image Classification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>CIFAR-10 Image Classification</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="file-upload">Upload an image</label>
+        <input id="file-upload" type="file" name="file" accept="image/*" onchange="uploadFile()">
+    </form>
+    <div class="result" id="result"></div>
+
+    <script>
+        function uploadFile() {
+            var formData = new FormData();
+            var fileInput = document.getElementById('file-upload');
+            var file = fileInput.files[0];
+            formData.append('file', file);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result').textContent = data.error;
+                } else {
+                    document.getElementById('result').textContent = 'Predicted Class: ' + data.class;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').textContent = 'An error occurred. Please try again.';
+            });
+        }
+    </script>
+</body>
+</html>
